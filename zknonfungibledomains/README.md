@@ -3,12 +3,12 @@ The rise of decentralized identity has always clashed with one major concern: **
 
 This project was inspired by the question:  
 **"Can we prove domain ownership *without revealing the domain name itself*?"**  
-That idea led to **zkDomain Credentials** — a fully private, zk-native solution.
+That idea led to **zkNFDomain Credentials** — a fully private, zk-native solution.
 
 ---
 
 ## What it does
-**zkDomain Credentials** is a privacy-preserving identity credentialing system built on the Aleo blockchain. It allows users to mint **verifiable NFTs** that prove they own a domain name — all without revealing the domain publicly. These Credential NFTs are issued as **ZKPasses**, representing proof of domain ownership using zero-knowledge proofs.
+**zkNFDomain Credentials** is a privacy-preserving identity credentialing system built on the Aleo blockchain. It allows users to mint **verifiable NFTs** that prove they own a domain name — all without revealing the domain publicly. These Credential NFTs are issued as **ZKPasses**, representing proof of domain ownership using zero-knowledge proofs.
 
 The project combines:
 - **Aleo Name Service (ANS)** for decentralized domain name registration,
