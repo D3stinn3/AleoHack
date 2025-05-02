@@ -19,14 +19,14 @@ program zknonfungibledomains.aleo {
     // Credential Issuance Using ZKPass
     // ----------------------------------
     // Main transition to issue credential NFT and ZPass
-    transition issue_credential(
+    transition issue_domain_credential(
         private sig: signature,
         private name: [u128; 4],
         private parent: field,
         private issuer: address
     ) -> (CredentialNFT, zpass_merkle_8.aleo/ZPass) {
         
-        // ✅ Use a function-style call to calc_name_hash
+        // ✅ call to calc_name_hash
         let name_hash: field = aleo_name_service_registry.aleo/calc_name_hash(name, parent);
 
 
@@ -61,7 +61,7 @@ program zknonfungibledomains.aleo {
     }
 
     // Optional: wrap verifier from zpass
-    transition verify_zpass(
+    transition verify_domain_credential(
         zpass: zpass_merkle_8.aleo/ZPass,
         leaf_hash: field,
         proof: [field; 3]

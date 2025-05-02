@@ -25,7 +25,7 @@ struct data:
     metadata as [field; 4u32];
     content as Name;
 
-function issue_credential:
+function issue_domain_credential:
     input r0 as signature.private;
     input r1 as [u128; 4u32].private;
     input r2 as field.private;
@@ -40,7 +40,7 @@ function issue_credential:
     output r10 as CredentialNFT.record;
     output r8 as zpass_merkle_8.aleo/ZPass.record;
 
-function verify_zpass:
+function verify_domain_credential:
     input r0 as zpass_merkle_8.aleo/ZPass.record;
     input r1 as field.private;
     input r2 as [field; 3u32].private;
