@@ -1,0 +1,20 @@
+[[package]]
+name = "zpass_merkle_8.aleo"
+network = "testnet"
+location = "network"
+checksum = "3b2f76ba81496ca990b4bebc2a40dfa68878f89c893212d794a79fd404d34fed"
+dependencies = []
+
+[[package]]
+name = "ans_utils.aleo"
+network = "testnet"
+location = "network"
+checksum = "0dc4d09bc8fdf822814b3babb9b195027d4fb2e8566e802f3761cdac128089f0"
+dependencies = []
+
+[[package]]
+name = "aleo_name_service_registry.aleo"
+network = "testnet"
+location = "network"
+checksum = "5f1045eebc759539f6e5ca66e3baa63dca76e57b8834a8dece0a62beed51bbf0"
+dependencies = ["ans_utils.aleo"]
