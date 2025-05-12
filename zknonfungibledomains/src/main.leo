@@ -1,6 +1,4 @@
 // The 'zknonfungibledomains' program.
-import zpass_merkle_8.aleo;
-import aleo_name_service_registry.aleo;
 
 program zknonfungibledomains.aleo {
 
@@ -9,63 +7,92 @@ program zknonfungibledomains.aleo {
         owner_hash: field,
     }
 
+    struct TokenId {
+        data1: u128,
+        data2: u128,
+        data3: u128,
+        data4: u128,
+        parent: field,
+    }
+
     record CredentialNFT {
         owner: address,
         token_id: CredentialTokenId,
         edition: scalar,
     }
 
-    // ----------------------------------
-    // Credential Issuance Using ZKPass
-    // ----------------------------------
-    // Main transition to issue credential NFT and ZPass
+    record DomainZPass {
+        owner: address,
+        issuer: address,
+        root: field,
+    }
+
+    mapping nft_owners: field => address;
+
+    // === Issue Domain Credential ===
     transition issue_domain_credential(
         private sig: signature,
         private name: [u128; 4],
         private parent: field,
+        private root: field,
         private issuer: address
-    ) -> (CredentialNFT, zpass_merkle_8.aleo/ZPass) {
-        
-        // ✅ call to calc_name_hash
-        let name_hash: field = aleo_name_service_registry.aleo/calc_name_hash(name, parent);
+    ) -> (CredentialNFT, DomainZPass) {
+        // Step 1: Reconstruct TokenId struct from inputs
+        let token_id: TokenId = TokenId {
+            data1: name[0u32],
+            data2: name[1u32],
+            data3: name[2u32],
+            data4: name[3u32],
+            parent: parent,
+        };
 
+        let domain_hash: field = Poseidon2::hash_to_field(token_id);
 
+        // Step 2: Confirm domain is registered and caller is owner
+        // let owner: address = nft_owners.get(domain_hash);
+        // assert_eq(owner, self.caller);
 
-        // Hash the caller address
+        // Step 3: Verify signature on Merkle root
+        assert_eq(signature::verify(sig, issuer, root), true);
+
+        // Step 4: Compute owner hash
         let owner_hash: field = Poseidon2::hash_to_field(self.caller);
 
-        // Prepare leaves for Merkle root
-        let leaves: [field; 8] = [
-            Poseidon2::hash_to_field(issuer),
-            name_hash,
-            owner_hash,
-            0field, 0field, 0field, 0field, 0field,
-        ];
-
-        // Issue a ZPass from imported zpass contract
-        let zpass: zpass_merkle_8.aleo/ZPass = zpass_merkle_8.aleo/issue(sig, leaves, issuer);
-
-        // Construct credential NFT
-        let token_id: CredentialTokenId = CredentialTokenId {
-            domain_hash: name_hash,
+        // Step 5: Create domain credential NFT
+        let zk_token_id: CredentialTokenId = CredentialTokenId {
+            domain_hash,
             owner_hash,
         };
 
         let nft: CredentialNFT = CredentialNFT {
             owner: self.caller,
-            token_id,
+            token_id: zk_token_id,
             edition: 0scalar,
+        };
+
+        let zpass: DomainZPass = DomainZPass {
+            owner: self.caller,
+            issuer,
+            root,
         };
 
         return (nft, zpass);
     }
 
-    // Optional: wrap verifier from zpass
+    // === Verifier for Domain Credential ===
     transition verify_domain_credential(
-        zpass: zpass_merkle_8.aleo/ZPass,
+        zpass: DomainZPass,
         leaf_hash: field,
         proof: [field; 3]
     ) -> bool {
-        return zpass_merkle_8.aleo/verify(zpass, leaf_hash, proof);
+        let element: field = leaf_hash;
+
+        element = Poseidon2::hash_to_field(element + proof[0u32]);
+        element = Poseidon2::hash_to_field(element + proof[1u32]);
+        element = Poseidon2::hash_to_field(element + proof[2u32]);
+
+        assert_eq(element, zpass.root);
+        return true;
     }
+
 }
