@@ -3,18 +3,5 @@
   "version": "0.1.0",
   "description": "",
   "license": "MIT",
-  "dependencies": [
-    {
-      "name": "zpass_merkle_8.aleo",
-      "location": "network",
-      "network": "testnet",
-      "path": null
-    },
-    {
-      "name": "aleo_name_service_registry.aleo",
-      "location": "network",
-      "network": "testnet",
-      "path": null
-    }
-  ]
+  "dependencies": []
 }
