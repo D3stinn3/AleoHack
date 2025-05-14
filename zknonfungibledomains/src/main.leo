@@ -15,10 +15,21 @@ program zknonfungibledomains.aleo {
         parent: field,
     }
 
+    struct Data {
+        metadata: [field; 4],
+    }
+
     record CredentialNFT {
-        owner: address,
-        token_id: CredentialTokenId,
-        edition: scalar,
+        private owner: address,
+        private data: Data,
+        private edition: scalar,
+    }
+
+    record CredentialNFTView {
+        private owner: address,
+        private data: Data,
+        private edition: scalar,
+        private is_view: bool,
     }
 
     record DomainZPass {
@@ -28,16 +39,21 @@ program zknonfungibledomains.aleo {
     }
 
     mapping nft_owners: field => address;
+    mapping nft_commits: field => bool;
 
-    // === Issue Domain Credential ===
-    transition issue_domain_credential(
+    inline commit_nft(data: Data, edition: scalar) -> field {
+        let hash: field = BHP256::hash_to_field(data);
+        let commit: field = BHP256::commit_to_field(hash, edition);
+        return commit;
+    }
+
+    async transition issue_domain_credential(
         private sig: signature,
         private name: [u128; 4],
         private parent: field,
         private root: field,
         private issuer: address
-    ) -> (CredentialNFT, DomainZPass) {
-        // Step 1: Reconstruct TokenId struct from inputs
+    ) -> Future {
         let token_id: TokenId = TokenId {
             data1: name[0u32],
             data2: name[1u32],
@@ -47,52 +63,54 @@ program zknonfungibledomains.aleo {
         };
 
         let domain_hash: field = Poseidon2::hash_to_field(token_id);
+        let metadata: Data = Data {
+            metadata: [domain_hash, 0field, 0field, 0field],
+        };
+        let edition: scalar = 0scalar;
+        let commit: field = commit_nft(metadata, edition);
+        let owner: address = self.caller;
 
-        // Step 2: Confirm domain is registered and caller is owner
-        // let owner: address = nft_owners.get(domain_hash);
-        // assert_eq(owner, self.caller);
-
-        // Step 3: Verify signature on Merkle root
         assert_eq(signature::verify(sig, issuer, root), true);
 
-        // Step 4: Compute owner hash
-        let owner_hash: field = Poseidon2::hash_to_field(self.caller);
+        return finalize_issue(commit, owner, metadata, edition, issuer, root);
+    }
 
-        // Step 5: Create domain credential NFT
-        let zk_token_id: CredentialTokenId = CredentialTokenId {
-            domain_hash,
-            owner_hash,
-        };
+    async function finalize_issue(
+        commit: field,
+        owner: address,
+        metadata: Data,
+        edition: scalar,
+        issuer: address,
+        root: field
+    ) {
+        nft_commits.set(commit, true);
+        nft_owners.set(commit, owner);
 
         let nft: CredentialNFT = CredentialNFT {
-            owner: self.caller,
-            token_id: zk_token_id,
-            edition: 0scalar,
+            owner,
+            data: metadata,
+            edition,
         };
 
         let zpass: DomainZPass = DomainZPass {
-            owner: self.caller,
+            owner,
             issuer,
             root,
         };
-
-        return (nft, zpass);
     }
 
-    // === Verifier for Domain Credential ===
     transition verify_domain_credential(
         zpass: DomainZPass,
         leaf_hash: field,
         proof: [field; 3]
     ) -> bool {
         let element: field = leaf_hash;
-
         element = Poseidon2::hash_to_field(element + proof[0u32]);
         element = Poseidon2::hash_to_field(element + proof[1u32]);
         element = Poseidon2::hash_to_field(element + proof[2u32]);
-
         assert_eq(element, zpass.root);
         return true;
     }
-
 }
+
+

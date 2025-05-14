@@ -1,12 +1,11 @@
 program zknonfungibledomains.aleo;
 
-struct CredentialTokenId:
-    domain_hash as field;
-    owner_hash as field;
+struct Data:
+    metadata as [field; 4u32];
 
 record CredentialNFT:
     owner as address.private;
-    token_id as CredentialTokenId.private;
+    data as Data.private;
     edition as scalar.private;
 
 record DomainZPass:
@@ -25,6 +24,10 @@ mapping nft_owners:
     key as field.public;
     value as address.public;
 
+mapping nft_commits:
+    key as field.public;
+    value as boolean.public;
+
 function issue_domain_credential:
     input r0 as signature.private;
     input r1 as [u128; 4u32].private;
@@ -33,14 +36,24 @@ function issue_domain_credential:
     input r4 as address.private;
     cast r1[0u32] r1[1u32] r1[2u32] r1[3u32] r2 into r5 as TokenId;
     hash.psd2 r5 into r6 as field;
-    sign.verify r0 r4 r3 into r7;
-    assert.eq r7 true;
-    hash.psd2 self.caller into r8 as field;
-    cast r6 r8 into r9 as CredentialTokenId;
-    cast self.caller r9 0scalar into r10 as CredentialNFT.record;
-    cast self.caller r4 r3 into r11 as DomainZPass.record;
-    output r10 as CredentialNFT.record;
-    output r11 as DomainZPass.record;
+    cast  r6 0field 0field 0field into r7 as [field; 4u32];
+    cast r7 into r8 as Data;
+    hash.bhp256 r8 into r9 as field;
+    commit.bhp256 r9 0scalar into r10 as field;
+    sign.verify r0 r4 r3 into r11;
+    assert.eq r11 true;
+    async issue_domain_credential r10 self.caller r8 0scalar r4 r3 into r12;
+    output r12 as zknonfungibledomains.aleo/issue_domain_credential.future;
+
+finalize issue_domain_credential:
+    input r0 as field.public;
+    input r1 as address.public;
+    input r2 as Data.public;
+    input r3 as scalar.public;
+    input r4 as address.public;
+    input r5 as field.public;
+    set true into nft_commits[r0];
+    set r1 into nft_owners[r0];
 
 function verify_domain_credential:
     input r0 as DomainZPass.record;
