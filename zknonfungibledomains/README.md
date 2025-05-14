@@ -13,7 +13,6 @@ That idea led to **zkNFDomain Credentials** — a fully private, zk-native solut
 The project combines:
 - **Aleo Name Service (ANS)** for decentralized domain name registration,
 - **ZKPass** for issuing private, Merkle-based identity credentials,
-- **ZK ArtFactory** for minting Credential NFTs tied to ZPass proofs.
 
 > “We wanted to bridge digital identity, privacy, and ownership — and domain names were the perfect anchor. This project proves you own something, without showing the world what that thing is.”
 
