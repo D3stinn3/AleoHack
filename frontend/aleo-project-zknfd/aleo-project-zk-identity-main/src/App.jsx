@@ -83,7 +83,7 @@ function App() {
         </p>
         <p>
           <button onClick={issueZPass}>
-            {"Issue Zpass"}
+            {"Issue ZKNFD ZPASS"}
           </button>
         </p>
         <p>
