@@ -1,139 +1,125 @@
-## Inspiration
-The rise of decentralized identity has always clashed with one major concern: **privacy**. While ENS and similar systems prove ownership on-chain, they also expose sensitive associations — domain-to-wallet links, metadata, and more.
+# 🔐 ZK NonFungibleDomains (ZKNFD)
 
-This project was inspired by the question:  
-**"Can we prove domain ownership *without revealing the domain name itself*?"**  
-That idea led to **zkNFDomain Credentials** — a fully private, zk-native solution.
+ZKNFD is a privacy-preserving domain credentialing protocol on the Aleo blockchain. It issues **zero-knowledge NFTs** to prove domain ownership — **without ever revealing the domain name** publicly. These NFTs are fully private, soulbound, and verifiable using ZPass-style Merkle proofs.
 
 ---
 
-## What it does
-**zkNFDomain Credentials** is a privacy-preserving identity credentialing system built on the Aleo blockchain. It allows users to mint **verifiable NFTs** that prove they own a domain name — all without revealing the domain publicly. These Credential NFTs are issued as **ZKPasses**, representing proof of domain ownership using zero-knowledge proofs.
+## 🚀 Live Deployment
 
-The project combines:
-- **Aleo Name Service (ANS)** for decentralized domain name registration,
-- **ZKPass** for issuing private, Merkle-based identity credentials,
-
-> “We wanted to bridge digital identity, privacy, and ownership — and domain names were the perfect anchor. This project proves you own something, without showing the world what that thing is.”
+- **Program ID:** `zknonfungibledomains_v1.aleo`
+- **Address:** `aleo1le9uklfd948egtdjuyra8afh85gu5n7xx3g7k7tpwe3gyhcc6cqsdjzgky`
+- **Deployment TX:** `at1tt4q0c0fzupe600dv5vpp44gttxl3le748mhavfnehmcp8gshq8smu9cq4`
 
 ---
 
-## How we built it
-This project was built using the **Leo programming language** and deployed on Aleo's zero-knowledge blockchain.
+## 🧠 Inspiration
 
-### 🔗 Components Integrated:
-- `aleo_name_service_registry.aleo`: For secure domain registration and metadata.
-- `zpass_merkle_8.aleo`: To construct a Merkle tree representing identity traits, and issue ZPass records.
+The rise of decentralized identity always clashed with one major concern: **privacy**. Most domain and identity systems expose on-chain metadata and wallet links.
 
-## Challenges we ran into
-- **Mapping multiple zk systems into a single transition** required complex reasoning around hashes, Merkle trees, and data types.
-- Debugging with Leo's evolving toolchain meant we had to **manually simulate some logic** before testing on-chain.
-- Ensuring **cross-contract compatibility** and matching data structures took detailed planning.
-- Constructing **verifiable but private proofs** without leaking metadata took careful Merkle root construction.
+This project asks:
+
+> **"Can we prove domain ownership *without revealing the domain name itself*?"**
+
+And answers it with: **ZKNFD** — a zk-native identity system that bridges domains, ZKPass, and NFTs.
 
 ---
 
-## Accomplishments that we're proud of
-We wrote a custom Leo program called `zknonfungibledomains.aleo` that:
-1. Verifies the caller’s domain ownership.
-2. Generates a ZKPass using the Merkle root of identity + domain data.
-3. Mints a Credential NFT that’s **private by default** but verifiable.
+## ✅ What it Does
 
-## What we learned
-- How to build modular zkApps using Leo and deploy to Aleo.
-- Advanced concepts in **zero-knowledge Merkle proofs**, commitment schemes, and record management in Aleo.
-- How to write interoperable zk programs that link NFTs, names, and identity in a seamless UX.
+ZKNFD lets domain owners mint **soulbound NFTs** that prove domain control privately.
 
----
+- Mints NFTs with **private owner + private data**.
+- Verifies domain credentials via **Merkle root + signature**.
+- **No domain string, wallet address, or metadata is leaked**.
 
-## What's next for ZK NonFungibleDomains (ZKNFD)
-This is more than a hackathon project. The same mechanism can be used to:
-- Prove ownership of domains in anonymous DAOs.
-- Provide credentials for Web3 onboarding or gated access.
-- Issue **privacy-first soulbound identity badges** — all powered by Aleo.
-
-We’re excited to keep building and invite collaborators to join in.
-
-
-# 🔐 Use Cases for Private Domain Ownership Proofs
-
-In a privacy-preserving blockchain like Aleo, the ability to **prove domain ownership without revealing the actual domain** unlocks a new class of applications. Below are real-world scenarios where this zero-knowledge property becomes a powerful tool.
+### 🔗 Built on:
+- ✅ `ARC-721 NFT Standard` (private NFTs + public commitments)
+- ✅ `ZPass SDK` (Merkle root signature system)
+- ✅ `Aleo` for private computation and zero-knowledge proof verification
 
 ---
 
-## 1. 🗳️ Private DAO Membership or Access Control
+## 🛠 How We Built It
 
-> “Only domain owners can vote, but the DAO shouldn’t know which domains they hold.”
+### 🔧 Smart Contract Components
 
-- Gated communities where access, voting, or governance rights are tied to domain ownership.
-- Zero-knowledge proofs allow participation without revealing which domain a user controls.
+- **`issue_domain_credential(...)`**  
+  - Accepts a ZPass signature + domain hash → issues a private NFT + verifiable root.
 
----
-
-## 2. 👤 Anonymous Web3 Identity
-
-> “Prove you’re verified without revealing who you are.”
-
-- Domain-based credentials as **anonymous identity markers**.
-- Works well in privacy-preserving systems that want verified users — not their public keys or domains.
+- **`verify_domain_credential(...)`**  
+  - Confirms that a leaf (e.g., domain_hash or owner_hash) is part of a Merkle credential.
 
 ---
 
-## 3. ⚖️ Compliance in Regulated Environments
+## 🔐 Privacy Architecture
 
-> “Regulators need assurance, but public exposure isn’t safe.”
-
-- Enterprises can prove domain control for regulatory compliance (e.g., KYB, AML) without exposing business operations or infrastructure publicly.
-- Useful for accessing compliant DeFi platforms, stablecoins, or CBDC systems.
-
----
-
-## 4. 🌐 KYC Alternative for Web3 Onboarding
-
-> “Only real organizations can mint, but we don’t leak our customer base.”
-
-- Domain-based identity as a lightweight **KYC proxy**.
-- Ensures that only legitimate entities interact with dApps, APIs, or token systems — privately.
+- 🧱 NFT `CredentialNFT` is a private record: owner, metadata, edition.
+- 🔏 Data is committed using `BHP256::commit_to_field(...)`.
+- 🌐 Public commitment is stored in `nft_commits`; ownership optional via `nft_owners`.
 
 ---
 
-## 5. 🏆 Privacy-Preserving Reputation Systems
+## 🧩 Real-World Use Cases
 
-> “Earn domain-based badges without revealing the domain name.”
+### 1. 🗳️ Private DAO Voting
+- Verify member identity based on domain ownership
+- Keep identities and domains fully private
 
-- Users can receive or prove **long-term domain ownership** without linking themselves publicly.
-- For example: “I own a domain registered 5+ years ago” → gain credibility in Web3 networks.
+### 2. 👤 Web3 Onboarding
+- Mint a domain credential badge as a KYC proxy
+- Use `attest_access()` to grant login, resource access, or whitelist slots
 
----
-
-## 6. 🧾 ZK Credential Marketplaces
-
-> “Sell or lend identity-linked rights privately.”
-
-- Ownership of a domain might grant rights (e.g., discounts, hosting credits, publishing access).
-- Credentials can be proven and exchanged **without revealing the underlying domain**.
+### 3. 🏷️ Soulbound Badges for Reputable Domains
+- Mint non-transferable identity NFTs based on long-term domain control
 
 ---
 
-## 7. ✅🚫 Decentralized Whitelisting / Blacklisting
+## 🔍 Challenges We Overcame
 
-> “Prove you're on the list — without leaking your identity.”
+- Mapping multiple ZK systems across a single flow
+- Leo’s evolving async model (finalize + mapping + record output)
+- Preventing double-minting with `nft_commits`
+- Merging ZPass SDK, NFT standards, and Merkle verification logic
 
-- Whitelist access (e.g., to NFT mints, airdrops) or blacklist avoidance can be verified privately.
-- Keeps individual or business affiliations hidden while enforcing access control.
+---
+
+## 📚 What We Learned
+
+- Advanced Leo patterns: `async transition → finalize(...)`
+- How to enforce NFT uniqueness without revealing identity
+- Designing Aleo-compliant NFT protocols that align with ARC-721
+- Extending NFTs with **off-chain + on-chain proof interoperability**
 
 ---
 
-## 🔐 Why This Matters
+## 🔮 What’s Next
 
-Proving domain ownership without revealing the domain enables:
-
-- ✅ Selective disclosure
-- ✅ Anti-censorship by design
-- ✅ Private authentication
-- ✅ Anonymous trust and reputation
-- ✅ On-chain compliance without leaks
-
-It’s a foundational zero-knowledge primitive that unlocks secure, private participation in Web3 ecosystems.
+- 🧾 Add `publish_nft_content()` for optional metadata visibility
+- 🧠 Enable DAO integrations that auto-verify domain credentials
+- 🧪 Create a lightweight credential registry for Web3 access
+- 📜 Propose ZKNFD as a model for Aleo-based digital passports
 
 ---
+
+## 🌐 Use Cases for Private Domain Proofs
+
+### ✅ Gated DAO Membership
+> “Only domain owners can vote — but no one knows who owns what.”
+
+### ✅ ZK Identity for Web3
+> “Log in to dApps anonymously — yet verifiably.”
+
+### ✅ Compliance Without Exposure
+> “Prove domain ownership for KYC or KYB — without leaking business info.”
+
+---
+
+## 🏆 Submission Tracks
+
+- ✅ **Aleo NFT Standard Bounty**: Compliant with ARC-721
+- ✅ **ZPass Credentialing Track**: Merkle root + signature integration
+- ✅ **Verifiable Private States**: All NFTs are private and verifiable
+
+---
+
+We invite teams, DAOs, and infra projects to extend this into a **ZK credential layer for Web3**.
