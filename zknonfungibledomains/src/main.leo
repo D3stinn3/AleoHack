@@ -1,6 +1,6 @@
 // The 'zknonfungibledomains' program.
 
-program zknonfungibledomains.aleo {
+program zknonfungibledomains_v1.aleo {
 
     struct CredentialTokenId {
         domain_hash: field,

@@ -1,4 +1,4 @@
-# zknonfungibledomains.aleo
+# zknonfungibledomains_v1.aleo
 
 ## Build Guide
 

@@ -1,4 +1,4 @@
-program zknonfungibledomains.aleo;
+program zknonfungibledomains_v1.aleo;
 
 struct Data:
     metadata as [field; 4u32];
@@ -43,7 +43,7 @@ function issue_domain_credential:
     sign.verify r0 r4 r3 into r11;
     assert.eq r11 true;
     async issue_domain_credential r10 self.caller r8 0scalar r4 r3 into r12;
-    output r12 as zknonfungibledomains.aleo/issue_domain_credential.future;
+    output r12 as zknonfungibledomains_v1.aleo/issue_domain_credential.future;
 
 finalize issue_domain_credential:
     input r0 as field.public;

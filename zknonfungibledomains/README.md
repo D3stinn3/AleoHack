@@ -24,7 +24,6 @@ This project was built using the **Leo programming language** and deployed on Al
 ### 🔗 Components Integrated:
 - `aleo_name_service_registry.aleo`: For secure domain registration and metadata.
 - `zpass_merkle_8.aleo`: To construct a Merkle tree representing identity traits, and issue ZPass records.
-- `leo_nft.aleo`: For minting soulbound NFTs representing credential ownership.
 
 ## Challenges we ran into
 - **Mapping multiple zk systems into a single transition** required complex reasoning around hashes, Merkle trees, and data types.
